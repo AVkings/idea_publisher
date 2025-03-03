@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Book Details Section */
+        .book-container {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .book-image img {
+            max-width: 300px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .book-image img:hover {
+            transform: scale(1.05);
+        }
+
+        .book-info {
+            flex: 1;
+        }
+
+        .book-info h1 {
+            font-size: 2.5rem;
+            margin: 0 0 10px;
+            color: #333;
+        }
+
+        .book-info h3 {
+            font-size: 1.5rem;
+            margin: 0 0 20px;
+            color: #666;
+        }
+
+        .book-genre {
+            font-size: 1.1rem;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .book-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 20px 0;
+            color: #555;
+        }
+
+        .book-meta {
+            font-size: 0.9rem;
+            color: #777;
+            margin: 20px 0;
+        }
+
+        .average-rating {
+            font-size: 1.2rem;
+            color: #333;
+            margin: 20px 0;
+        }
+
+        .average-rating span {
+            color: #ffc107;
+            font-weight: bold;
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            margin-top: 40px;
+        }
+
+        .reviews-section h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .review-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .stars {
+            color: #ffc107;
+            font-size: 20px;
+        }
+
+        .review-date {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .review-content {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Review Form */
+        .review-form-container {
+            margin-top: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-form-container h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .rating-container {
+            margin-bottom: 20px;
+        }
+
+        .rating-container label {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .stars-display {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .stars-display .star {
+            cursor: pointer;
+            font-size: 24px;
+            color: #ddd;
+            transition: color 0.3s ease;
+        }
+
+        .stars-display .star:hover,
+        .stars-display .star.active {
+            color: #ffc107;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 1rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button[type="submit"] {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: #0056b3;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .nav-middle {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #666;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #007bff;
+            background-color: #f8f9fa;
+        }
+
+        .nav-link.active {
+            color: #007bff;
+            background-color: #e7f1ff;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="home.html" class="logo">
+                <alt="Logo">
+                BookStore
+            </a>
+        </div>
+        <div class="nav-middle">
+            <a href="home.html" class="nav-link">Home</a>
+            <a href="books.html" class="nav-link active">Books</a>
+            <a href="about.html" class="nav-link">About</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </div>
+        <div class="nav-right">
+            <div class="user-menu" id="userMenu">
+                <!-- This will be populated by JavaScript -->
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div id="bookDetails"></div>
+
+        <div class="reviews-section">
+            <h2>Reviews</h2>
+            <div id="reviewsContainer"></div>
+
+            <div class="review-form-container">
+                <h3>Write a Review</h3>
+                <form id="reviewForm">
+                    <div class="rating-container">
+                        <label>Rating:</label>
+                        <div id="starsDisplay" class="stars-display"></div>
+                        <input type="hidden" id="ratingInput" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="reviewText">Your Review:</label>
+                        <textarea id="reviewText" required></textarea>
+                    </div>
+                    <button type="submit">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/+esm'
+        window.supabase = createClient(
+            'https://ltofqcuzutvvxincoptz.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0b2ZxY3V6dXR2dnhpbmNvcHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAyMzY4MTUsImV4cCI6MjA1NTgxMjgxNX0.QyXKKGXP7pJe0xfFr64G53JlQ3B5AauwIx40ITjgOs8'
+        );
+    </script>
+    <script src="book-details.js"></script>
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4f46e5;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .form-group button:hover {
+            background: #4338ca;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add a New Book</h1>
+        <form id="addBookForm">
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+            <div class="form-group">
+                <label for="author">Author</label>
+                <input type="text" id="author" name="author" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="genre">Genre</label>
+                <input type="text" id="genre" name="genre" required>
+            </div>
+            <div class="form-group">
+                <label for="google_drive_link">Google Drive Link</label>
+                <input type="url" id="google_drive_link" name="google_drive_link" required>
+            </div>
+            <div class="form-group">
+                <label for="cover_image_url">Cover Image URL</label>
+                <input type="url" id="cover_image_url" name="cover_image_url" required>
+            </div>
+            <div class="form-group">
+                <label for="is_free">Is Free?</label>
+                <select id="is_free" name="is_free" required>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="price">Price (if not free)</label>
+                <input type="number" id="price" name="price" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+                <button type="submit">Add Book</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Supabase Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://ltofqcuzutvvxincoptz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0b2ZxY3V6dXR2dnhpbmNvcHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAyMzY4MTUsImV4cCI6MjA1NTgxMjgxNX0.QyXKKGXP7pJe0xfFr64G53JlQ3B5AauwIx40ITjgOs8';
+        const supabaseclient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Handle form submission
+        document.getElementById('addBookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get form data
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+            const description = document.getElementById('description').value;
+            const genre = document.getElementById('genre').value;
+            const google_drive_link = document.getElementById('google_drive_link').value;
+            const cover_image_url = document.getElementById('cover_image_url').value;
+            const is_free = document.getElementById('is_free').value === 'true';
+            const price = parseFloat(document.getElementById('price').value) || 0;
+
+            try {
+                // Insert the book into the Supabase table
+                const { data, error } = await supabaseclient
+                    .from('books')
+                    .insert([
+                        {
+                            title,
+                            author,
+                            description,
+                            genre,
+                            google_drive_link,
+                            cover_image_url,
+                            is_free,
+                            price,
+                        }
+                    ]);
+
+                if (error) throw error;
+
+                alert('Book added successfully!');
+                window.location.href = 'books.html'; // Redirect to the books page
+            } catch (error) {
+                console.error('Error adding book:', error);
+                alert('Error adding book. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

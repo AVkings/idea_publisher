@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notebook UI - Login & Signup</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .notebook {
+            width: 350px;
+            perspective: 1000px;
+        }
+
+        .notebook-cover {
+            background-color: #fff;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+
+        .page {
+            display: none;
+            transform: rotateY(180deg);
+            backface-visibility: hidden;
+        }
+
+        .active-page {
+            display: block;
+            transform: rotateY(0deg);
+        }
+
+        .inactive-page {
+            display: none;
+        }
+
+        .form-container {
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .input-error {
+            border-color: #ff4444;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 14px;
+            display: none;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .form-footer {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .form-footer a {
+            color: #007bff;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            border-radius: 5px;
+            color: white;
+            display: none;
+        }
+
+        .message.show-message {
+            display: block;
+        }
+
+        .message.success {
+            background-color: #28a745;
+        }
+
+        .message.error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="notebook">
+        <div class="notebook-cover">
+            <!-- Login Page -->
+            <div class="page active-page" id="login-page">
+                <div class="form-container">
+                    <h2>Welcome Back</h2>
+                    <form id="loginForm" onsubmit="return handleLogin(event)">
+                        <div class="input-group">
+                            <input type="email" id="login-email" placeholder="Email" required>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="login-password" placeholder="Password" required>
+                        </div>
+                        <button type="submit">Login</button>
+                        <div class="form-footer">
+                            <p>New to BookVerse? <a onclick="togglePage()">Create Account</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Signup Page -->
+            <div class="page inactive-page" id="signup-page">
+                <div class="form-container">
+                    <h2>Create Account</h2>
+                    <form id="signupForm" onsubmit="return handleSignup(event)">
+                        <div class="input-group">
+                            <input type="text" id="full-name" placeholder="Full Name" required>
+                            <span class="error-message" id="name-error">Please enter your full name</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" id="signup-email" placeholder="Email" required>
+                            <span class="error-message" id="email-error">Please enter a valid email</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="signup-password" placeholder="Password" required>
+                            <span class="error-message" id="password-error">Password must be at least 6 characters</span>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+                            <span class="error-message" id="confirm-password-error">Passwords do not match</span>
+                        </div>
+                        <button type="submit">Sign Up</button>
+                        <div class="form-footer">
+                            <p>Already have an account? <a onclick="togglePage()">Login</a></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="message" class="message"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://ltofqcuzutvvxincoptz.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx0b2ZxY3V6dXR2dnhpbmNvcHR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDAyMzY4MTUsImV4cCI6MjA1NTgxMjgxNX0.QyXKKGXP7pJe0xfFr64G53JlQ3B5AauwIx40ITjgOs8';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Form validation functions
+        function validateName(name) {
+            return name.length >= 2;
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validatePassword(password) {
+            return password.length >= 6;
+        }
+
+        function showMessage(text, type) {
+            const messageElement = document.getElementById('message');
+            messageElement.textContent = text;
+            messageElement.className = `message ${type}`;
+            messageElement.classList.add('show-message');
+            
+            setTimeout(() => {
+                messageElement.classList.remove('show-message');
+            }, 3000);
+        }
+
+        function togglePage() {
+            const loginPage = document.getElementById('login-page');
+            const signupPage = document.getElementById('signup-page');
+            
+            loginPage.classList.toggle('active-page');
+            loginPage.classList.toggle('inactive-page');
+            signupPage.classList.toggle('active-page');
+            signupPage.classList.toggle('inactive-page');
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) throw error;
+
+                showMessage('Login successful!', 'success');
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 1000);
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('full-name').value.trim();
+            const email = document.getElementById('signup-email').value.trim();
+            const password = document.getElementById('signup-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Reset error states
+            resetErrors();
+
+            // Validate inputs
+            let hasError = false;
+
+            if (!validateName(fullName)) {
+                showInputError('name-error', 'full-name');
+                hasError = true;
+            }
+
+            if (!validateEmail(email)) {
+                showInputError('email-error', 'signup-email');
+                hasError = true;
+            }
+
+            if (!validatePassword(password)) {
+                showInputError('password-error', 'signup-password');
+                hasError = true;
+            }
+
+            if (password !== confirmPassword) {
+                showInputError('confirm-password-error', 'confirm-password');
+                hasError = true;
+            }
+
+            if (hasError) return;
+
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: fullName
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                // Add user to custom table
+                await supabaseClient
+                    .from('users')
+                    .insert([{
+                        email: email,
+                        full_name: fullName,
+                        password_hash: password
+                    }]);
+
+                showMessage('Account created successfully! Please check your email.', 'success');
+                setTimeout(() => togglePage(), 2000);
+            } catch (error) {
+                showMessage(error.message, 'error');
+            }
+        }
+
+        function showInputError(errorId, inputId) {
+            const errorElement = document.getElementById(errorId);
+            const inputElement = document.getElementById(inputId);
+            errorElement.style.display = 'block';
+            inputElement.classList.add('input-error');
+        }
+
+        function resetErrors() {
+            const errorMessages = document.getElementsByClassName('error-message');
+            const inputs = document.getElementsByTagName('input');
+            
+            Array.from(errorMessages).forEach(error => error.style.display = 'none');
+            Array.from(inputs).forEach(input => input.classList.remove('input-error'));
+        }
+    </script>
+</body>
+</html>
